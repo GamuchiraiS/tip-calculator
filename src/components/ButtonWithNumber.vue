@@ -1,16 +1,15 @@
 <script setup>
-defineProps({
-  number: String,
-})
+const { number } = defineProps(['number']);
+const emit = defineEmits();
 
-function getTipPercentage(event){
-  const tipPercentage = event.target.value
-  console.log(tipPercentage)
-}
+const handleClick = () => {
+  // Emit the value to the parent component
+  emit('update:modelValue', number);
+};
 
 </script>
 <template>
-  <button :value="number" @click="getTipPercentage">
+  <button :value="number" @click="handleClick">
     {{ number }}
   </button>
 </template>
@@ -22,5 +21,9 @@ function getTipPercentage(event){
     padding: 0.6em 1.8em;
     border-radius: 5px;
     cursor: pointer;
+  }
+
+  button:hover{
+    background-color: hsl(172, 67%, 45%);
   }
 </style>

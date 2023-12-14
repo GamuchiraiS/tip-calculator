@@ -21,9 +21,23 @@ defineProps({
     justify-content: space-between;
   }
 
+  .tile > p{
+    color: hsl(172, 67%, 45%);
+    font-size: 1.5em;
+  }
+
   .text{
     display: flex;
     flex-direction: column;
+  }
+
+  .text p:first-child{
+    color: #ffffff;
+  }
+
+  .text p:not(:first-child){
+    color: hsl(184, 14%, 56%);
+    font-size: 0.8em;
   }
 
 </style>

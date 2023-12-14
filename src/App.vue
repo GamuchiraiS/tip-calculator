@@ -4,7 +4,7 @@ import ButtonWithNumber from './components/ButtonWithNumber.vue'
 import InputFieldLabel from './components/InputFieldLabel.vue'
 import ResultsTile from './components/ResultsTile.vue'
 import ButtonWithText from './components/ButtonWithText.vue'
-import {ref} from 'vue'
+import {ref, watch} from 'vue'
 
 //Variables
 const initialBillAmount = ref('')
@@ -13,6 +13,15 @@ const initialNumberOfPeople = ref('')
 const initialTipAmountPerPerson = ref('')
 const initialTotalPerPerson = ref('')
 
+//Watchers
+//Watch the initial values and call functions on change on data
+watch(
+    [initialBillAmount, initialTipPercentage, initialNumberOfPeople],
+    () => {
+      getTipAmountPerPerson();
+      getTotalAmountPerPerson();
+    }
+);
 //Functions
 function getBillAmount(event) {
   const billAmount = event.target.value
@@ -34,11 +43,26 @@ function getTipAmountPerPerson(){
   let tipAmountPerPerson = null
   tipAmountPerPerson = (billTotal * (tipPercentage/100)) / numberOfPeople
   initialTipAmountPerPerson.value = parseInt(tipAmountPerPerson)
-
 }
 
 function getTotalAmountPerPerson(){
+  const numberOfPeople = initialNumberOfPeople.value
   const billAmount = initialBillAmount.value
+  //get tip amount per person from tip calculation
+  let calculatedTipAmountPerPerson = initialTipAmountPerPerson.value
+  //get total tip amount
+  let calculatedTipAmount = calculatedTipAmountPerPerson * numberOfPeople
+  const totalBillAmount = billAmount + calculatedTipAmount
+  const totalPerPerson = totalBillAmount / numberOfPeople
+  initialTotalPerPerson.value = parseInt(totalPerPerson)
+}
+
+function resetValues() {
+  initialBillAmount.value = '';
+  initialTipPercentage.value = '';
+  initialNumberOfPeople.value = '';
+  initialTipAmountPerPerson.value = '';
+  initialTotalPerPerson.value = '';
 }
 </script>
 
@@ -53,7 +77,6 @@ function getTotalAmountPerPerson(){
         <input
             name="bill"
             v-model="initialBillAmount"
-            type="number"
             placeholder="0"
             @change="getBillAmount"
         />
@@ -62,15 +85,14 @@ function getTotalAmountPerPerson(){
       <div class="tip">
         <p>Select tip %</p>
         <div class="buttons">
-          <ButtonWithNumber number="5"/>
-          <ButtonWithNumber number="10"/>
-          <ButtonWithNumber number="15"/>
-          <ButtonWithNumber number="25"/>
-          <ButtonWithNumber number="50"/>
+          <ButtonWithNumber number="5" @click="getCustomTipPercentage" v-model="initialTipPercentage"/>
+          <ButtonWithNumber number="10" @click="getCustomTipPercentage" v-model="initialTipPercentage"/>
+          <ButtonWithNumber number="15" @click="getCustomTipPercentage" v-model="initialTipPercentage"/>
+          <ButtonWithNumber number="25" @click="getCustomTipPercentage" v-model="initialTipPercentage"/>
+          <ButtonWithNumber number="50" @click="getCustomTipPercentage" v-model="initialTipPercentage"/>
           <input
               name="custom"
               v-model="initialTipPercentage"
-              type="number"
               placeholder="Custom"
               @change="getCustomTipPercentage"
           />
@@ -82,7 +104,6 @@ function getTotalAmountPerPerson(){
         <input
             name="people"
             v-model="initialNumberOfPeople"
-            type="number"
             placeholder="0"
             @change="getNumberOfPeople"
         />
@@ -103,8 +124,9 @@ function getTotalAmountPerPerson(){
 
       <ButtonWithText
           text="Reset"
-          @click="getTipAmountPerPerson"
+          @click="resetValues"
       />
+
     </div>
 
   </main>
@@ -125,5 +147,6 @@ function getTotalAmountPerPerson(){
   .results{
     background-color: hsl(183, 100%, 15%);
     border-radius: 10px;
+    padding: 1.5em;
   }
 </style>
